@@ -1,0 +1,158 @@
+@theme {
+  /* Ink and neutrals: warm off-white canvas, white working surfaces, hairline borders. */
+  --color-midnight: #121419;
+  --color-graphite: #24272f;
+  --color-ink-soft: #3a3e48;
+  --color-slate: #6a6e78;
+  --color-mist: #e2e0d9;
+  --color-hairline: #ebe9e3;
+  --color-cloud: #f4f3ef;
+  --color-paper: #faf9f6;
+  --color-surface: #ffffff;
+  --color-stone: #cfccc3;
+  /* Text placed on ink-coloured buttons and chips; flips with the theme. */
+  --color-onink: #ffffff;
+  /* The navigation rail and dark marketing panels stay dark in both themes. */
+  --color-rail: #121419;
+
+  /* One controlled accent, kept for selection, focus and the few actions that need attention. */
+  --color-violet: #5b47d6;
+  --color-violet-deep: #4636b5;
+  --color-lavender: #a597ee;
+  --color-violet-wash: #efedfb;
+
+  /* Status colours, muted so they read as information rather than decoration. */
+  --color-success: #2f7d5b;
+  --color-success-text: #22593f;
+  --color-warning: #b7791f;
+  --color-warning-text: #7f5512;
+  --color-error: #c23b33;
+  --color-error-text: #982b25;
+  --color-sand: #c9b48a;
+  --color-sage: #8fae9c;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.75rem;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+    --color-midnight: #eceae4;
+    --color-graphite: #dcdad3;
+    --color-ink-soft: #c2c0b9;
+    --color-slate: #9b9ea6;
+    --color-mist: #30343c;
+    --color-hairline: #272a31;
+    --color-cloud: #101216;
+    --color-paper: #15171c;
+    --color-surface: #1a1d23;
+    --color-stone: #444955;
+    --color-onink: #121419;
+    --color-rail: #0b0c0f;
+    --color-violet: #8d7ff2;
+    --color-violet-deep: #7b6be8;
+    --color-lavender: #4b4291;
+    --color-violet-wash: #221f38;
+    --color-success: #4fb487;
+    --color-success-text: #82d3ac;
+    --color-warning: #d9a14a;
+    --color-warning-text: #e9c07c;
+    --color-error: #e5645b;
+    --color-error-text: #f29189;
+    --color-sand: #b39e74;
+    --color-sage: #6f9381;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-cloud);
+    color: var(--color-midnight);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sheet {
+  from {
+    opacity: 0.6;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drawer {
+  from {
+    transform: translateX(-16px);
+    opacity: 0.6;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #5b47d6;
+  outline-offset: 2px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-violet) 28%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

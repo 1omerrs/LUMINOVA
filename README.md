@@ -8,7 +8,7 @@
 
 Proje, **Ömer Faruk Aktürk** tarafından uçtan uca tasarlanıp geliştirilmiştir: veri modeli, iş kuralları, API, arayüz, e-posta otomasyonu ve yayın yapılandırması.
 
-> Bu depo projenin tanıtım sayfasıdır. Kaynak kodun tamamı özel bir depoda tutulmaktadır; aşağıda yalnızca birkaç kısa örnek yer alır.
+> Bu depo, LUMINOVA'nın uygulama kodunu (backend, frontend, veritabanı migration'ları ve testler) inceleme amacıyla içerir. Sunucu ve yayın yapılandırması, ortam dosyaları ve yardımcı betikler özel tutulmaktadır. Kod açık kaynak değildir; ayrıntılar için [Lisans](#lisans) bölümüne bakın.
 
 **▶ Uygulama turu (59 sn):** [assets/luminova-uygulama-turu.mp4](assets/luminova-uygulama-turu.mp4) — bir yöneticinin kayıt olup tüm modülleri açması, modülleri gezmesi ve ekibine yeni bir üyeyi onaylaması.
 
@@ -92,38 +92,44 @@ flowchart LR
 
 Ekran görüntülerindeki şirket, kişi ve tutarlar demo verisidir.
 
-## Kısa kod örnekleri
+## Kod yapısı
 
-Modül yetkisi, her uç noktaya tek satırlık bir bağımlılıkla eklenir. Okuma istekleri en az görüntüleme, diğer istekler düzenleme yetkisi ister:
-
-```python
-def require_module(key: str) -> Callable[..., Member]:
-    """Reads need at least view access to the module; every other method needs edit access."""
-
-    def dependency(request: Request, db: Session = Depends(get_db), member: Member = Depends(current_member)) -> Member:
-        try:
-            module_access(db, member, key, write=request.method not in READ_METHODS)
-        except ModuleError as error:
-            raise HTTPException(status_code=error.status_code, detail=error.detail) from None
-        return member
-
-    return dependency
-
-
-@router.get("/products")
-def list_products(member: Member = Depends(require_module("inventory")), ...): ...
+```
+backend/
+  app/
+    api/          uç noktalar ve ortak bağımlılıklar (oturum, CSRF, modül yetkisi)
+    models/       SQLAlchemy modelleri
+    schemas/      Pydantic istek/yanıt şemaları
+    modules/      iş modülleri: customers, quotes, sales, inventory, production,
+                  finance, tasks, projects, reporting, automation
+    services/     kimlik, ekip, bildirim, e-posta kuyruğu, içgörüler, zamanlayıcı, yönetim
+  alembic/        veritabanı migration'ları
+  tests/          pytest testleri
+frontend/
+  src/
+    pages/        kayıt, giriş, kurulum, çalışma alanı ve yönetim sayfaları
+    components/   modül ekranları, formlar, paneller
+    lib/          API istemcisi ve tipler
+docs/
+  mimari.md       veri modeli, iş kuralları ve kararlar
+  n8n.md          e-posta ve webhook sözleşmesi
 ```
 
-Katılım kodları, birbirine karışan karakterler (`0/O`, `1/I`) çıkarılmış bir alfabeyle üretilir:
+İncelemeye başlamak için:
 
-```python
-JOIN_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-
-
-def new_join_code() -> str:
-    raw = "".join(secrets.choice(JOIN_ALPHABET) for _ in range(8))
-    return f"{raw[:4]}-{raw[4:]}"
-```
+| Konu | Dosya |
+|---|---|
+| Modül yetkisi (her uç noktada tek satır) | [`backend/app/api/deps.py`](backend/app/api/deps.py) |
+| Kayıt, e-posta kodu, giriş ve katılım kodu | [`backend/app/services/auth.py`](backend/app/services/auth.py) |
+| Katılım onayı ve üye yetkileri | [`backend/app/services/team.py`](backend/app/services/team.py) |
+| Sipariş onay/teslim kuralları | [`backend/app/modules/sales/rules.py`](backend/app/modules/sales/rules.py) |
+| Reçete ve malzeme hesabı | [`backend/app/modules/production/recipes.py`](backend/app/modules/production/recipes.py) |
+| Proje planı, kritik yol ve riskler | [`backend/app/modules/projects/planning.py`](backend/app/modules/projects/planning.py) |
+| Görev bağımlılıkları ve şablonlar | [`backend/app/modules/tasks/workflow.py`](backend/app/modules/tasks/workflow.py) |
+| Nakit akışı ve bakiyeler | [`backend/app/modules/finance/reports.py`](backend/app/modules/finance/reports.py) |
+| Otomatik görevler ve öne çıkanlar | [`backend/app/services/insights.py`](backend/app/services/insights.py) |
+| İmzalı e-posta kuyruğu (n8n) | [`backend/app/services/mail.py`](backend/app/services/mail.py) |
+| Şirket silme ve platform paneli | [`backend/app/services/admin.py`](backend/app/services/admin.py) |
 
 ## Durum
 
@@ -131,4 +137,4 @@ Uygulama yerel ortamda uçtan uca çalışmaktadır. Ödeme altyapısı bilinçl
 
 ## Lisans
 
-© 2026 Ömer Faruk Aktürk. Tüm hakları saklıdır. Bu depodaki görseller ve metinler izin alınmadan kopyalanamaz veya dağıtılamaz.
+© 2026 Ömer Faruk Aktürk. Tüm hakları saklıdır. Kod yalnızca incelenmek üzere paylaşılmıştır; izin alınmadan kopyalanamaz, değiştirilemez, dağıtılamaz veya ticari amaçla kullanılamaz.
